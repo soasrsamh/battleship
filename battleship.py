@@ -19,7 +19,7 @@
 ##################################################################################################################
 ##################################################################################################################
 
-
+from random import *
 
 
 ##################################################################################################################
@@ -55,6 +55,7 @@ class Board:
         
         # Initialize an empty board (with only water)
         self.grid = [[self.water for j in range(self.boardHeight)] for i in range(self.boardWidth)]
+        
         
         # Keep track of how many ships are on the board and have been sunk
         self.numShips = 0
@@ -103,7 +104,33 @@ class Board:
                     print("Win! The attack sunk the last remaining ship.")
                     result = 'Win'
             return result
-                    
+    
+    def randAttack(self):
+        needtoAttack = True
+        while needtoAttack:
+            #pick random coordinates
+            x = randint(0,self.boardWidth)
+            y = randint(0,self.boardHeight)
+        
+            if grid[x][y] != self.hit or grid [x][y] != self.miss:
+                outcome = attack(x,y)
+                needtoAttack = False
+                
+            return (outcome,x,y)
+    
+    def nearAttack(self,x,y):
+        #if near coordinates are on board and not already taken
+        if x+1 < self.gridWidth and grid[x+1][y] != self.hit or grid[x+1][y] != self.miss:
+            attack(x+1,y)
+    
+    def AI(self):
+        notWin = True
+        while notWin:
+            (outcome,x,y) = randAttack()
+            if outcome = "Hit":
+                nearAttack(x,y)
+            elif outcome = 'Win':
+                notWin = False
                     
     # Print to stdout all information about a board including past hits, misses, and ship locations
     def __str__(self):
@@ -184,33 +211,34 @@ class Ship:
             raise Exception("Error: The ship was not initialized because one or more inputs were of an unexpected type.")
         if length < 1: #Ships each must occupy one or more positions
             raise Exception("Error: The ship was not initialized because ships must occupy one or more positions.") 
-            
+        if direction not in ["left","right","up","down"]: 
+            raise Exception("Error: The ship was not initialized because it does not have a recognized direction.")
+        
         self.length = length
         self.x = x
         self.y = y
         self.direction = direction
-        self.coordinates = [] # list of all the coordinates of a ship
         self.numHits = 0 #keeps track how many times a ship has been hit
          
-        # initialing the coordinates list
-        if self.direction == 'left':
-            for i in range(x, x+length):
-                self.coordinates.append((i,y))
-        elif self.direction == 'right':
-            for i in range(x-length+1, x+1):
-                self.coordinates.append((i,y))
-        elif self.direction == 'down':
-            for i in range(y, y+length):
-                self.coordinates.append((x,i))
-        elif self.direction == 'up':
-            for i in range(y-length+1, y+1):
-                self.coordinates.append((x,i))
-        else:
-            raise Exception("Error: The ship was not initialized because it does not have a recognized direction.")
-
 
     def getCoordinates(self):
-        return self.coordinates
+
+        coordinates = []
+        # initialing the coordinates list
+        if self.direction == 'left':
+            for i in range(self.x, self.x+self.length):
+                coordinates.append((i,self.y))
+        elif self.direction == 'right':
+            for i in range(self.x-self.length+1, self.x+1):
+                coordinates.append((i,self.y))
+        elif self.direction == 'down':
+            for i in range(self.y, self.y+self.length):
+                coordinates.append((self.x,i))
+        elif self.direction == 'up':
+            for i in range(self.y-self.length+1, self.y+1):
+                coordinates.append((self.x,i))
+        
+        return coordinates
     
     # Return true if all of the ship's coordinates have been hit, otherwise returns false
     def isSunk(self):
