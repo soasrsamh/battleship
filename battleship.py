@@ -116,7 +116,7 @@ class Board:
                 outcome = attack(x,y)
                 needtoAttack = False
                 
-            return (outcome,x,y)
+        return (outcome,x,y)
     
     def nearAttack(self,x,y):
         #if near coordinates are on board and not already taken
